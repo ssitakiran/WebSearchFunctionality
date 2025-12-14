@@ -42,7 +42,7 @@ def load_langgraph_agenticai_app():
                     st.error("Error: No usecase selected")
                 
                 ## Create the graph builder
-                graph_builder=GraphBuilder(model=model)
+                graph_builder=GraphBuilder(model = model)
                 try:
                     returned_graph = graph_builder.setup_graph(usecase)
                     DisplayResultStreamlit(usecase=usecase, graph=returned_graph, user_message=user_message).display_result_on_ui()

@@ -24,3 +24,22 @@ class DisplayResultStreamlit:
                     with st.chat_message("assistant"):
                         st.write(values['messages'].content)
         
+        if usecase == "Chatbot with tool":
+            # Prepare state and invoke the graph
+            initial_state = {"messages":[user_message]}
+            print(initial_state)
+            
+            res = graph.invoke(initial_state)
+            
+            for message in res["messages"]:
+                if str(type(message)) == "<class 'langchain_core.messages.human.HumanMessage'>":
+                    with st.chat_message("user"):
+                        st.write(message.content)
+                elif str(type(message)) == "<class 'langchain_core.messages.tool.ToolMessage'>":
+                    with st.chat_message("ai"):
+                        st.write("Tool Call Start")
+                        st.write(message.content)
+                        st.write("Tool Call End")
+                elif str(type(message)) == "<class 'langchain_core.messages.ai.AIMessage'>" and message.content:
+                    with st.chat_message("assistant"):
+                        st.write(message.content)  
