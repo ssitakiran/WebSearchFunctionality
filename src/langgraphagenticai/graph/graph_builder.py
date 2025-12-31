@@ -6,6 +6,8 @@ from src.langgraphagenticai.state.state import State
 from src.langgraphagenticai.node.basic_chatbot_node import BasicChatBotNodesBuilder
 from src.langgraphagenticai.node.chatbot_with_Tool_Node import ChatBotToolNode
 
+from src.langgraphagenticai.node.ai_news_node import AINewsNode
+
 class GraphBuilder:
     def __init__(self, model):
         self.llm=model
@@ -52,6 +54,34 @@ class GraphBuilder:
         self.graph_builder.add_edge("chatbot", END)
         
     
+    def ai_news_builder_graph(self):
+        llm=self.llm
+        
+        aiNewsObject=AINewsNode(llm=self.llm)
+        
+        
+        # Added the nodes 
+        self.graph_builder.add_node("fetch_news", aiNewsObject.fetch_news)
+        self.graph_builder.add_node("summarize_news", aiNewsObject.summarize_news)
+        self.graph_builder.add_node("save_results", aiNewsObject.save_result)
+        
+        #Added the edges  
+        self.graph_builder.set_entry_point("fetch_news")
+        self.graph_builder.add_edge("fetch_news", "summarize_news")
+        self.graph_builder.add_edge("summarize_news", "save_results")
+        self.graph_builder.add_edge("save_results", END)
+        
+        #self.graph_builder.add_node("chatbot", chatbotToolDecisionStartNode)
+        #node=create_tool_node(tools=tools)
+        #self.graph_builder.add_node("tools", node)
+        
+        #self.graph_builder.add_node("summarize", "")
+        #self.graph_builder.add_node("saveresult", "")
+    
+        #self.graph_builder.add_edge(START, "chatbot")
+        #self.graph_builder.add_conditional_edges("chatbot", tools_condition)
+        #self.graph_builder.add_edge("tools", "summarize")
+        #self.graph_builder.add_edge("summarize", END)
     
     def setup_graph(self, usecase:str):
         """
@@ -62,6 +92,9 @@ class GraphBuilder:
         
         if usecase == "Chatbot with tool":
             self.chatbot_with_tools_build_graph()
+        
+        if usecase == "AI News":
+            self.ai_news_builder_graph()
             
         
         graph1 = self.graph_builder.compile()
